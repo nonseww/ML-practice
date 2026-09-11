@@ -268,3 +268,81 @@ HAVING AVG(price) > 200;
 result = df[df["price"] > 50].groupby("user_id")["price"].mean().reset_index(name="avg_price")
 result = result[result["avg_price"] > 200]
 ```
+
+## 11. COUNT(\*) vs COUNT(column)
+
+Пусть есть таблица:
+
+|  id | user_id | price |
+| --: | ------: | ----: |
+|   1 |      10 |   100 |
+|   2 |      10 |  NULL |
+|   3 |      20 |   300 |
+|   4 |      20 |   200 |
+
+```SQL
+SELECT COUNT(*)
+FROM orders;
+```
+
+Отдаст 4, потому что `COUNT(*)` считает строки.
+
+А:
+
+```SQL
+SELECT COUNT(price)
+FROM orders;
+```
+
+Отдаст 3, потому что `COUNT(column)` не считает `NULL`.
+
+## 12. DISTINCT
+
+Допустим у нас есть
+
+```
+user_id
+10
+10
+20
+20
+20
+30
+```
+
+```SQL
+SELECT COUNT(user_id)
+FROM orders;
+```
+
+Вернет 6. А:
+
+```SQL
+SELECT COUNT(DISTINCT user_id)
+FROM orders;
+```
+
+Вернет 3, потому что он считает только количество уникальных.
+
+## 13. NULL
+
+Так `NULL` проверять нельзя:
+
+```SQL
+WHERE price = NULL
+```
+
+Надо:
+
+```SQL
+WHERE price IS NULL
+```
+
+## 14. Агрегаты и NULL
+
+Большинство агрегатных функций игнориуют `NULL`.
+
+- SUM
+- AVG
+- MIN
+- MAX
