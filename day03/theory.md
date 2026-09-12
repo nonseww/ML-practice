@@ -219,3 +219,45 @@ test["age"] = test["age"].fillna(mean)
 ```python
 pd.concat([df1, df2])
 ```
+
+## 18. Аналог ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ...)
+
+Пусть для таблицы:
+
+| user_id | event_time |
+| ------- | ---------- |
+| 1       | 10:00      |
+| 1       | 12:00      |
+| 1       | 15:00      |
+| 2       | 09:00      |
+| 2       | 11:00      |
+
+`SQL`:
+
+```SQL
+ROW_NUMBER() OVER (
+    PARTITION BY user_id
+    ORDER BY event_time DESC
+)
+```
+
+означает:
+
+1. разбить строки по группках по `user_id`.
+2. отсортировать по `event_time` по убыванию.
+3. пронумеровать внутри каждой группки отдельно.
+
+В Pandas:
+
+```python
+df = df.sort_values("event_time", ascending=False)
+df["rn"] = df.groupby("user_id").cumcount() + 1
+```
+
+Соответствие:
+
+| SQL                        | Pandas                                       |
+| -------------------------- | -------------------------------------------- |
+| `PARTITION BY user_id`     | `groupby("user_id")`                         |
+| `ORDER BY event_time DESC` | `sort_values("event_time", ascending=False)` |
+| `ROW_NUMBER()`             | `cumcount() + 1`                             |

@@ -542,6 +542,13 @@ FROM events;
 | 2       | 11:00      | 1   |
 | 2       | 09:00      | 2   |
 
+Работает как:
+
+```python
+df = df.sort_values("event_time", ascending=False)
+df["rn"] = df.groupby("user_id").cumcount() + 1
+```
+
 ## 21. Найти последнее событие
 
 Допустим, мы хотим получить только `rn = 1`. Но оконную функцию нельзя просто так использовать в `WHERE` того же уровня запроса.
@@ -571,3 +578,16 @@ WHERE rn = 1;
 | ------- | ---------- |
 | 1       | 15:00      |
 | 2       | 11:00      |
+
+Работает как:
+
+```python
+df = df.sort_values("event_time", ascending=False)
+last_result = df.groupby("user_id").head(1)
+
+# или
+
+df = df.sort_values("event_time", ascending=False)
+df["rn"] = df.groupby("user_id").cumcount() + 1
+last_result = df[df["rn"] == 1]
+```
