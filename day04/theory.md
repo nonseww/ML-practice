@@ -1,5 +1,7 @@
 # SQL
 
+**orders**
+
 |  id | user_id | product  | price |
 | --: | ------: | -------- | ----: |
 |   1 |      10 | Phone    |   500 |
@@ -273,6 +275,8 @@ result = result[result["avg_price"] > 200]
 
 Пусть есть таблица:
 
+**orders**
+
 |  id | user_id | price |
 | --: | ------: | ----: |
 |   1 |      10 |   100 |
@@ -346,3 +350,92 @@ WHERE price IS NULL
 - AVG
 - MIN
 - MAX
+
+## 15. JOIN
+
+Пусть есть две таблицы:
+
+**users**
+
+| user_id | name  |
+| ------: | ----- |
+|       1 | Анна  |
+|       2 | Борис |
+|       3 | Катя  |
+
+**orders**
+
+| order_id | user_id | price |
+| -------: | ------: | ----: |
+|      101 |       1 |   500 |
+|      102 |       1 |   300 |
+|      103 |       2 |   700 |
+|      104 |       4 |   200 |
+
+Мы хотим получить:
+
+| name  | price |
+| ----- | ----: |
+| Анна  |   500 |
+| Анна  |   300 |
+| Борис |   700 |
+
+```SQL
+SELECT users.name, orders.price
+FROM users
+JOIN orders
+    ON users.user_id = orders.user_id;
+```
+
+```python
+users.merge(orders, on="user_id")[["name", "price"]]
+```
+
+## 16. INNER JOIN
+
+Он оставляет **только совпавшие строки**.
+
+```SQL
+SELECT users.name, orders.price
+FROM users
+INNER JOIN orders
+    ON users.user_id = orders.user_id;
+```
+
+Работает как:
+
+```python
+users.merge(orders, on="user_id", how="inner")[["name", "price"]]
+```
+
+> JOIN работает как INNER JOIN.
+
+## 17. LEFT JOIN
+
+Сохраняем **все строки из левой таблицы**, даже если соответствия справа нет.
+
+```SQL
+SELECT users.name, orders.price
+FROM users
+LEFT JOIN orders
+    ON users.user_id = orders.user_id;
+```
+
+Получим:
+
+| name  | price |
+| ----- | ----: |
+| Анна  |   500 |
+| Анна  |   300 |
+| Борис |   700 |
+| Катя  |  NULL |
+
+Работает как:
+
+```python
+users.merge(orders, on="user_id", how="left")[["name", "price"]]
+```
+
+## 18. RIGHT / OUTER JOIN
+
+Работают как `right` и `outer` в `pandas`.
