@@ -262,3 +262,58 @@ L2 использует квадраты коэффициентов:
 - alpha > 1 -> нормальная/большая регуляризация
 
 Если регуляризация слишком жесткая, модель может начать недообучаться.
+
+## 8. Scaling
+
+### StandartScaler
+
+![](./images/%20scaler1.png)
+
+После scaling признак обычно имеет:
+
+- среднее около `0`.
+- стандартное отклонение около `1`.
+
+### Min-Max Scaling
+
+![](./images/minmaxscale.png)
+
+Получаем диапазон `[0, 1]`.
+
+### RobustScaler
+
+Если много выбросов, можно использовать его.
+
+> Вместо среднего и стандартного отклонения используем более устойчивые к выбросам статистики.
+
+### One-Hot Encoding
+
+У нас есть категориальный признак, а модели нужны числа. Данный алгоритм создает отдельный бинарный признак для каждой категории.
+
+> One-Hot Encoding превращает одну категориальную колонку в несколько колонок 0/1.
+
+## 9. Pipeline
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandartScaler
+from sklearn.linear_model import LogisticRegression
+
+model = Pipeline([
+    ("scaler", StandartScaler()),
+    ("model", LogisticRegression())
+])
+
+При Cross-Validation skelarn сам делает:
+```
+
+```
+fold 1:
+train fold → fit scaler → transform train
+                         → transform validation
+                         → train model
+
+fold 2:
+новый train → новый fit scaler → validation
+...
+```
